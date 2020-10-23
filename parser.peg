@@ -1,0 +1,50 @@
+grammar PGN    
+
+# PGN Spec: http://www.saremba.de/chessgml/standards/pgn/pgn-complete.htm
+# Representation of a full game in pgn format, tag_pairs, movetext and score
+game <- tag_pairs:tag_pairs [\n]? gcomment:comment? movetext:movetext score:score? [\s]* %make_game
+
+# A tag pair is a key, value store in the form [Key "Value"]
+tag_pairs <- tag_pair* %make_tag_pairs
+tag_pair <- "[" dlm key dlm "\"" value "\"" dlm "]" dlm %make_tag_pair
+key <- [A-Za-z0-9_]+
+value <- [^\"]*
+
+
+# Movetext is one or more moves, terminated by a score, like 1. "e4 e5 0-1"
+movetext <- move* %make_movetext
+move <- move_number dlm dlm white:san dlm dlm wnags:nags? dlm wcomment:comment? dlm wvars:variations? dlm black:san? dlm bnags:nags? dlm bcomment:comment? dlm bvars:variations? dlm mcomment:comment?
+move_number <- [0-9]+ "."
+
+# A SAN is a standard algebraic notation representation of a single players move, like e4
+san <- (file rank dlm file rank / file rank file rank dlm file rank file rank / file rank dlm file rank file rank / piece file rank file rank dlm  piece file rank file rank  / piece file rank file rank dlm file rank file rank / file rank file rank dlm piece file rank file rank / square / san_psq / file takes square / castle / blacks_move) promotes? check?
+san_psq <- piece square takes? square / piece takes? square / piece file takes? square / piece rank takes? square 
+piece <- [KQRNBP] 
+disam <- square / file / rank 
+odisam <- square / disam 
+takes <- "x"
+square <- file rank
+file <- [a-h]
+rank <- [1-8]
+promotes <- "=" [KQRNB]
+check <- [+#]
+castle <- "O-O-O" / "O-O" / "e1g1" / "e8g8" / "e1c1" / "e8c8"
+comment <- "{" [^\}]* "}"
+
+# for when it is 1...
+blacks_move <- ".."
+cblacks_move <- "..."
+
+# A NAG is a numeric annotation glyph, representing anontations on a move such as !! ($3)
+nags <- nag+
+nag <- "$" [0-9]+ dlm
+
+# A var or variation is a list of one or more moves surrounded by ()
+variations <- variation+ %make_variations
+variation <- "(" dlm movetext ")" dlm %make_variation
+
+# The score is one of the following, * being unknown
+score <- "1-0" / "0-1" / "1/2-1/2" / "*"
+
+# A possible whitespace delimeter
+dlm <- [\s+]?
