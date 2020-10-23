@@ -16,6 +16,15 @@ Because it has several advantages:
 2. I have to developed just 50% more of the parser
 3. Surely my knowledge of PEG Parsers will should important for my next homework: a pattern language for chess.
 
+Status:
+
+Python Parser : 100%
+Ruby Parser   : 95%
+Java Parser   : 50%
+Js Parser     : 50%
+
+Any help is wellcome!
+
 Canopy
 
 Canopy is a parser compiler targeting Java, JavaScript, Python and Ruby. It takes a file describing a parsing expression grammar and compiles it into a parser module in the target language. The generated parsers have no runtime dependency on Canopy itself.
